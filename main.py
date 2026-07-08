@@ -11,6 +11,7 @@ EMAIL = "24f2004647@ds.study.iitm.ac.in"
 
 app = FastAPI()
 
+
 # Allow browser verification
 app.add_middleware(
     CORSMiddleware,
@@ -69,3 +70,8 @@ async def analytics(
         "revenue": revenue,
         "top_user": top_user
     }
+
+
+@app.get("/")
+def root():
+    return {"status": "ok"}
