@@ -16,7 +16,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -29,18 +29,26 @@ class Event(BaseModel):
 class AnalyticsRequest(BaseModel):
     events: List[Event]
 
+from typing import Optional
+
 @app.post("/analytics")
 async def analytics(
     data: AnalyticsRequest,
-    x_api_key: str = Header(None)
+    x_api_key: Optional[str] = Header(
+        default=None,
+        alias="X-API-Key"
+    )
 ):
     if x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized"
+        )
 
     total_events = len(data.events)
 
     unique_users = len(
-        set(event.user for event in data.events)
+        {event.user for event in data.events}
     )
 
     revenue = sum(
@@ -58,10 +66,11 @@ async def analytics(
                 + event.amount
             )
 
-    top_user = max(
-        positive_totals,
-        key=positive_totals.get
-    ) if positive_totals else ""
+    top_user = (
+        max(positive_totals, key=positive_totals.get)
+        if positive_totals
+        else ""
+    )
 
     return {
         "email": EMAIL,
@@ -70,7 +79,6 @@ async def analytics(
         "revenue": revenue,
         "top_user": top_user
     }
-
 
 @app.get("/")
 def root():
