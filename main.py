@@ -7,7 +7,7 @@ API_KEY = "ak_2y086qo4refpcumkrpqbjmnv"
 
 # IMPORTANT:
 # Replace with your actual email address
-EMAIL = "your-email@example.com"
+EMAIL = "24f2004647@ds.study.iitm.ac.in"
 
 app = FastAPI()
 
